@@ -4,10 +4,10 @@ public class StudentResponseDto
 {
     public int Id { get; set; }
     public string StudentNumber { get; set; }
-    public string Email { get; set; } // User üzerinden gelecek
-    public string FullName { get; set; } // Opsiyonel: User'dan birleştirilecek
+    public string Email { get; set; } 
+    public string FullName { get; set; } 
     public int DepartmentId { get; set; }
-    public bool IsDeleted { get; set; } // BaseModel'den gelen durum
+    public bool IsDeleted { get; set; } 
 }
 
 public class StudentCreateDto

@@ -2,6 +2,7 @@
 using OgrenciBilgiSistemiProject.Data;
 using OgrenciBilgiSistemiProject.Models;
 using OgrenciBilgiSistemiProject.DTOs;
+using AutoMapper;
 
 namespace OgrenciBilgiSistemiProject.Controllers
 {
@@ -10,7 +11,12 @@ namespace OgrenciBilgiSistemiProject.Controllers
     public class StudentCourseOfferingController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public StudentCourseOfferingController(AppDbContext context) => _context = context;
+        private readonly IMapper _mapper;
+        public StudentCourseOfferingController(AppDbContext context, IMapper mapper) 
+        { 
+            _context = context; 
+            _mapper = mapper;
+        }
 
         [HttpPost]
         public async Task<IActionResult> Enroll(StudentCourseOfferingCreateDto dto)

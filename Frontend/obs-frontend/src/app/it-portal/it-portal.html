@@ -1,0 +1,103 @@
+<div class="it-full-system">
+
+  <aside class="col dept-col">
+    <div class="col-header">
+      <h3>🏛️ Bölümler</h3>
+      <button class="btn-icon" (click)="addDepartment()" title="Bölüm Ekle">+</button>
+    </div>
+    <div class="admin-form">
+      <input [(ngModel)]="newDeptName" placeholder="Yeni Bölüm...">
+    </div>
+
+    <div class="list-container">
+      <div *ngFor="let dept of universityData"
+           (click)="selectDept(dept)"
+           [class.active]="selectedDept === dept" class="list-item">
+        {{ dept.deptName }}
+        <button class="btn-del-small" (click)="deleteDept(dept)">×</button>
+      </div>
+    </div>
+  </aside>
+
+  <aside class="col teacher-col" *ngIf="selectedDept">
+    <div class="col-header">
+      <h3>👨‍🏫 Hocalar</h3>
+      <button class="btn-icon" (click)="addTeacherToDept()" title="Hoca Ekle">+</button>
+    </div>
+    <div class="admin-form">
+      <input [(ngModel)]="newTeacherName" placeholder="Hoca Ad Soyad...">
+    </div>
+
+    <div class="list-container">
+      <div *ngFor="let t of selectedDept.teachers"
+           (click)="selectTeacher(t)"
+           [class.active]="selectedTeacher === t" class="list-item">
+        {{ t.name }}
+        <button class="btn-del-small">×</button>
+      </div>
+    </div>
+  </aside>
+
+  <aside class="col course-col" *ngIf="selectedTeacher">
+    <div class="col-header">
+      <h3>📚 Ders Atama</h3>
+    </div>
+    <div class="admin-form-vertical">
+      <input [(ngModel)]="newCourse.code" placeholder="Kod (YAZ101)">
+      <input [(ngModel)]="newCourse.name" placeholder="Ders Adı">
+      <button class="btn-action" (click)="assignCourseToTeacher()">Dersi Atla/Kaydet</button>
+    </div>
+
+    <div class="list-container">
+      <div *ngFor="let c of selectedTeacher.courses"
+           (click)="selectCourse(c)"
+           [class.active]="selectedCourse === c" class="list-item">
+        <strong>{{ c.code }}</strong> - {{ c.name }}
+      </div>
+    </div>
+  </aside>
+
+  <main class="main-stage" *ngIf="selectedCourse">
+    <div class="stage-header">
+      <div>
+        <h2>{{ selectedCourse.name }}</h2>
+        <p>Öğrenci Listesi & Not Kontrolü</p>
+      </div>
+      <button class="btn-add-student" (click)="assignStudent()">+ Yeni Öğrenci Ekle</button>
+    </div>
+
+    <table class="it-master-table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Öğrenci</th>
+          <th>Vize</th>
+          <th>Final</th>
+          <th>Ort.</th>
+          <th>İşlem</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of selectedCourse.students">
+          <td>{{ s.id }}</td>
+          <td><strong>{{ s.name }}</strong></td>
+          <td><input type="number" [(ngModel)]="s.midterm" class="grade-in"></td>
+          <td><input type="number" [(ngModel)]="s.final" class="grade-in"></td>
+          <td class="avg-val">{{ (s.midterm * 0.4 + s.final * 0.6) | number:'1.0-1' }}</td>
+          <td>
+            <button class="btn-table-save" title="Notu Kilitle">💾</button>
+            <button class="btn-table-del" title="Kaydı Sil">🗑️</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
+
+  <div class="empty-state" *ngIf="!selectedDept">
+    <div class="hero-content">
+      <h1>ÜNİVERSİTE OTOMASYONU</h1>
+      <p>Bilgi İşlem Yetkili Kontrol Paneli</p>
+      <div class="status-indicator">Sistem Durumu: Aktif</div>
+    </div>
+  </div>
+</div>

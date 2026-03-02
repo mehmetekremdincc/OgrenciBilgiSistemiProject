@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OgrenciBilgiSistemiProject.Data;
 using OgrenciBilgiSistemiProject.Models;
 using OgrenciBilgiSistemiProject.DTOs;
+using AutoMapper;
 
 namespace OgrenciBilgiSistemiProject.Controllers
 {
@@ -11,7 +12,12 @@ namespace OgrenciBilgiSistemiProject.Controllers
     public class CourseController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public CourseController(AppDbContext context) => _context = context;
+        private readonly IMapper _mapper;
+        public CourseController(AppDbContext context, IMapper mapper) 
+        { 
+            _context = context; 
+            _mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()

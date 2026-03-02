@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OgrenciBilgiSistemiProject.Data;
 using OgrenciBilgiSistemiProject.Models;
 using OgrenciBilgiSistemiProject.DTOs;
+using AutoMapper;
 
 namespace OgrenciBilgiSistemiProject.Controllers
 {
@@ -11,7 +12,12 @@ namespace OgrenciBilgiSistemiProject.Controllers
     public class StudentController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public StudentController(AppDbContext context) => _context = context;
+        private readonly IMapper _mapper;
+        public StudentController(AppDbContext context, IMapper mapper) 
+        { 
+            _context = context; 
+            _mapper = mapper;
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllStudents()
@@ -24,7 +30,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
                     StudentNumber = s.StudentNumber,
                     Email = s.User.Email,
                     DepartmentId = s.DepartmentId,
-                    IsDeleted = !s.IsActive // IsActive false ise IsDeleted true döner
+                    IsDeleted = !s.IsActive 
                 }).ToListAsync();
 
             return Ok(students);
@@ -74,7 +80,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
 
             student.StudentNumber = dto.StudentNumber;
             student.DepartmentId = dto.DepartmentId;
-            student.UpdatedAt = DateTime.UtcNow; // Güncelleme tarihini set ediyoruz
+            student.UpdatedAt = DateTime.UtcNow; 
 
             await _context.SaveChangesAsync();
             return Ok("Student updated");
@@ -86,7 +92,6 @@ namespace OgrenciBilgiSistemiProject.Controllers
             var student = await _context.Students.FindAsync(id);
             if (student == null) return NotFound("Student not found");
 
-            // SOFT DELETE: Fiziksel silme yerine IsActive'i false yapıyoruz
             student.IsActive = false;
             student.UpdatedAt = DateTime.UtcNow;
 

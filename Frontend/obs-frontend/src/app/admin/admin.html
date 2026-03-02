@@ -1,0 +1,66 @@
+<div class="teacher-portal">
+  <header class="portal-header">
+    <div class="user-profile">
+      <h2>{{ teacherName }}</h2>
+      <span>{{ department }} Akademisyen Paneli</span>
+    </div>
+  </header>
+
+  <div class="portal-grid">
+    <aside class="course-sidebar">
+      <h3>📚 Derslerim</h3>
+      <div *ngFor="let course of myCourses"
+           (click)="selectCourse(course)"
+           [class.active]="selectedCourse?.id === course.id"
+           class="course-card">
+        {{ course.name }}
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div *ngIf="selectedCourse; else noCourse">
+        <h3>{{ selectedCourse.name }} - Sınıf Seçiniz</h3>
+        <div class="class-tabs">
+          <button *ngFor="let cls of selectedCourse.classes"
+                  (click)="selectClass(cls)"
+                  [class.active-tab]="selectedClass === cls">
+            {{ cls.level }}. Sınıf
+          </button>
+        </div>
+
+        <div *ngIf="selectedClass; else noClass" class="table-container">
+          <table class="grade-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Öğrenci Adı</th>
+                <th>Vize</th>
+                <th>Final</th>
+                <th>Ortalama</th>
+                <th>Sonuç</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let std of selectedClass.students">
+                <td>{{ std.id }}</td>
+                <td>{{ std.name }}</td>
+                <td><input type="number" [(ngModel)]="std.midterm" min="0" max="100"></td>
+                <td><input type="number" [(ngModel)]="std.final" min="0" max="100"></td>
+                <td class="bold">{{ calculateAvg(std.midterm, std.final) | number:'1.0-1' }}</td>
+                <td>
+                  <span [class]="calculateAvg(std.midterm, std.final) >= 50 ? 'pass' : 'fail'">
+                    {{ calculateAvg(std.midterm, std.final) >= 50 ? 'GEÇTİ' : 'KALDI' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="save-btn">💾 Değişiklikleri Kaydet</button>
+        </div>
+      </div>
+
+      <ng-template #noCourse><div class="placeholder">Lütfen sol menüden bir ders seçiniz.</div></ng-template>
+      <ng-template #noClass><div class="placeholder">Lütfen bir sınıf düzeyi seçiniz.</div></ng-template>
+    </main>
+  </div>
+</div>

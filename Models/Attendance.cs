@@ -2,7 +2,6 @@
 {
     public class Attendance : BaseEntity
     {
-        public int Id { get; set; }
         public int StudentCourseOfferingId { get; set; }
         public StudentCourseOffering StudentCourseOffering { get; set; }
         public DateTime Date { get; set; }

@@ -402,6 +402,10 @@ namespace OgrenciBilgiSistemiProject.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("integer");
 

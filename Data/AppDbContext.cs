@@ -27,7 +27,6 @@ namespace OgrenciBilgiSistemiProject.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Global query filter
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
@@ -37,14 +36,12 @@ namespace OgrenciBilgiSistemiProject.Data
                 }
             }
 
-            // User ayarları
             modelBuilder.Entity<User>(entity =>
             {
                 entity.HasIndex(u => u.Email).IsUnique();
                 entity.Property(u => u.PasswordHash).IsRequired();
             });
 
-            // Student ayarları
             modelBuilder.Entity<Student>(entity =>
             {
                 entity.HasIndex(s => s.StudentNumber).IsUnique();
@@ -53,7 +50,6 @@ namespace OgrenciBilgiSistemiProject.Data
                       .HasForeignKey<Student>(s => s.UserId);
             });
 
-            // Teacher ayarları
             modelBuilder.Entity<Teacher>(entity =>
             {
                 entity.HasOne(t => t.User)
@@ -61,13 +57,11 @@ namespace OgrenciBilgiSistemiProject.Data
                       .HasForeignKey<Teacher>(t => t.UserId);
             });
 
-            // Course ayarları
             modelBuilder.Entity<Course>(entity =>
             {
                 entity.HasIndex(c => c.Code).IsUnique();
             });
 
-            // Grade ayarları
             modelBuilder.Entity<Grade>(entity =>
             {
                 entity.Property(g => g.Midterm).HasColumnType("decimal(5,2)");
@@ -76,14 +70,12 @@ namespace OgrenciBilgiSistemiProject.Data
                 entity.Property(g => g.LetterGrade).HasMaxLength(2);
             });
 
-            // Schedule - Cascade
             modelBuilder.Entity<Schedule>()
                 .HasOne(s => s.CourseOffering)
                 .WithMany(co => co.Schedules)
                 .HasForeignKey(s => s.CourseOfferingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Attendance
             modelBuilder.Entity<Attendance>()
                 .HasOne(a => a.StudentCourseOffering)
                 .WithMany(sco => sco.Attendances)

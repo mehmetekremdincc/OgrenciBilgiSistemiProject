@@ -1,0 +1,22 @@
+<div class="login-wrapper">
+  <div class="login-card">
+    <h2>Öğrenci Bilgi Sistemi</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+      <div class="input-group">
+        <input type="email" formControlName="email" required>
+        <label>E-posta</label>
+        <span class="underline"></span>
+      </div>
+
+      <div class="input-group">
+        <input type="password" formControlName="password" required>
+        <label>Şifre</label>
+        <span class="underline"></span>
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid">Giriş Yap</button>
+
+    </form>
+  </div>
+</div>

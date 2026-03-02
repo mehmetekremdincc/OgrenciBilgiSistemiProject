@@ -2,6 +2,7 @@
 using OgrenciBilgiSistemiProject.Data;
 using OgrenciBilgiSistemiProject.Models;
 using OgrenciBilgiSistemiProject.DTOs;
+using AutoMapper;
 
 namespace OgrenciBilgiSistemiProject.Controllers
 {
@@ -10,7 +11,12 @@ namespace OgrenciBilgiSistemiProject.Controllers
     public class AttendanceController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public AttendanceController(AppDbContext context) => _context = context;
+        private readonly IMapper _mapper;
+        public AttendanceController(AppDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddAttendance(AttendanceCreateDto dto)
