@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Text;
 using OgrenciBilgiSistemiProject.Models;
 using OgrenciBilgiSistemiProject.Services.Abstract;
-using Microsoft.Extensions.Configuration;
 
 namespace OgrenciBilgiSistemiProject.Services.Concrete
 {
@@ -19,20 +18,31 @@ namespace OgrenciBilgiSistemiProject.Services.Concrete
 
         public string CreateToken(User user)
         {
-            var claims = new[]
+            if (user.Role == null)
+                throw new Exception("User role not loaded!");
+
+            var claims = new List<Claim>
             {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtSettings:Secret"]));
+            var secret = _config["JwtSettings:Secret"]
+                         ?? throw new Exception("JWT Secret not found!");
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expirationMinutes = Convert.ToDouble(_config["JwtSettings:ExpirationMinutes"]);
 
             var token = new JwtSecurityToken(
                 issuer: _config["JwtSettings:Issuer"],
                 audience: _config["JwtSettings:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(Convert.ToDouble(_config["JwtSettings:ExpirationMinutes"])),
+                expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
                 signingCredentials: creds
             );
 

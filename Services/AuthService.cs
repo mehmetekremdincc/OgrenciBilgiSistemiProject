@@ -1,45 +1,56 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using OgrenciBilgiSistemiProject.Data;
 using OgrenciBilgiSistemiProject.DTOs;
 using OgrenciBilgiSistemiProject.Models;
-using System.Linq;
+using OgrenciBilgiSistemiProject.Services.Abstract;
 
 namespace OgrenciBilgiSistemiProject.Services
 {
     public class AuthService
     {
         private readonly AppDbContext _context;
-        private readonly PasswordHasher<User> _passwordHasher;
+        private readonly IPasswordHasher _passwordHasher;
+        private readonly ITokenService _tokenService;
 
-        public AuthService(AppDbContext context)
+        public AuthService(
+            AppDbContext context,
+            IPasswordHasher passwordHasher,
+            ITokenService tokenService)
         {
             _context = context;
-            _passwordHasher = new PasswordHasher<User>();
+            _passwordHasher = passwordHasher;
+            _tokenService = tokenService;
         }
 
-        public LoginResponse Login(LoginRequest request)
+        public LoginResponse? Login(LoginRequest request)
         {
-          
             var user = _context.Users
                 .Include(u => u.Role)
                 .FirstOrDefault(u => u.Email == request.Email);
 
             if (user == null) return null;
 
-            var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
-            if (result != PasswordVerificationResult.Success) return null;
+            bool isValid = false;
+
+            try
+            {
+                isValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);
+            }
+            catch
+            {
+                isValid = (user.PasswordHash == request.Password);
+            }
+
+            if (!isValid) return null;
+
+            var token = _tokenService.CreateToken(user);
 
             return new LoginResponse
             {
-                Token = null,                     
-                Role = user.Role?.Name ?? "Undefined",
-                Username = user.Email             
+                Username = user.Email,
+                Role = user.Role?.Name ?? "User", 
+                Token = token
             };
         }
-
-
-
-
     }
 }

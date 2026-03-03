@@ -1,11 +1,7 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using OgrenciBilgiSistemiProject.Data;
 using OgrenciBilgiSistemiProject.DTOs;
-using OgrenciBilgiSistemiProject.Services.Abstract;
+using OgrenciBilgiSistemiProject.Services;
 
 namespace OgrenciBilgiSistemiProject.Api.Controllers
 {
@@ -13,50 +9,29 @@ namespace OgrenciBilgiSistemiProject.Api.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
-        private readonly IMapper _mapper;
-        private readonly AppDbContext _context;
-        private readonly IPasswordHasher _passwordHasher;
+        private readonly AuthService _authService;
 
-        public AuthController(ITokenService tokenService, IMapper mapper, AppDbContext context, IPasswordHasher passwordHasher)
+        public AuthController(AuthService authService)
         {
-            _tokenService = tokenService;
-            _mapper = mapper;
-            _context = context;
-            _passwordHasher = passwordHasher;
+            _authService = authService;
         }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var user = _context.Users
-      .Include(u => u.Role)
-      .FirstOrDefault(u => u.Email == request.Email);
+            var result = _authService.Login(request);
 
-            if (user == null)
+            if (result == null)
                 return Unauthorized(new { message = "Email veya şifre hatalı" });
 
-            var isValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);
-            if (!isValid)
-                return Unauthorized(new { message = "Email veya şifre hatalı" });
-
-            var token = _tokenService.CreateToken(user);
-
-            var response = new LoginResponse
-            {
-                Username = user.Email,
-                Role = user.Role.Name,
-                Token = token
-            };
-                
-            return Ok(response);
+            return Ok(result);
         }
 
         [Authorize(Roles = "Teacher")]
         [HttpGet("adminpanel")]
         public IActionResult AdminPanel()
         {
-            return Ok("Sadece öğretmenler erişebilir.");
+            return Ok("Sadece Teacher rolü erişebilir.");
         }
     }
 }

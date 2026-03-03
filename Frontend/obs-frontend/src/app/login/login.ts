@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
@@ -12,17 +13,28 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(3)]]
+      password: ['', [Validators.required]]
     });
   }
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log("Backend'e gidecek veri:", this.loginForm.value);
-      alert("Giriş denendi: " + this.loginForm.value.email);
+
+      this.authService.login(this.loginForm.value)
+        .subscribe({
+          next: (res) => {
+            console.log("Giriş başarılı:", res);
+            localStorage.setItem('token', res.token);
+            alert("Login başarılı!");
+          },
+          error: (err) => {
+            console.error("Login hatası:", err);
+            alert("Email veya şifre hatalı");
+          }
+        });
     }
   }
 }

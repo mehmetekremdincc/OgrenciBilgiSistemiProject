@@ -1,5 +1,6 @@
 <div class="it-full-system">
 
+  <!-- BÖLÜMLER -->
   <aside class="col dept-col">
     <div class="col-header">
       <h3>🏛️ Bölümler</h3>
@@ -14,11 +15,12 @@
            (click)="selectDept(dept)"
            [class.active]="selectedDept === dept" class="list-item">
         {{ dept.deptName }}
-        <button class="btn-del-small" (click)="deleteDept(dept)">×</button>
+        <button class="btn-del-small" (click)="deleteDept(dept, $event)">×</button>
       </div>
     </div>
   </aside>
 
+  <!-- HOCALAR -->
   <aside class="col teacher-col" *ngIf="selectedDept">
     <div class="col-header">
       <h3>👨‍🏫 Hocalar</h3>
@@ -33,11 +35,12 @@
            (click)="selectTeacher(t)"
            [class.active]="selectedTeacher === t" class="list-item">
         {{ t.name }}
-        <button class="btn-del-small">×</button>
+        <button class="btn-del-small" (click)="deleteTeacher(t, $event)">×</button>
       </div>
     </div>
   </aside>
 
+  <!-- DERSLER -->
   <aside class="col course-col" *ngIf="selectedTeacher">
     <div class="col-header">
       <h3>📚 Ders Atama</h3>
@@ -57,6 +60,7 @@
     </div>
   </aside>
 
+  <!-- ÖĞRENCİLER -->
   <main class="main-stage" *ngIf="selectedCourse">
     <div class="stage-header">
       <div>
@@ -85,7 +89,7 @@
           <td><input type="number" [(ngModel)]="s.final" class="grade-in"></td>
           <td class="avg-val">{{ (s.midterm * 0.4 + s.final * 0.6) | number:'1.0-1' }}</td>
           <td>
-            <button class="btn-table-save" title="Notu Kilitle">💾</button>
+            <button class="btn-table-save" (click)="updateGrade()" title="Notu Kilitle">💾</button>
             <button class="btn-table-del" title="Kaydı Sil">🗑️</button>
           </td>
         </tr>
@@ -93,6 +97,7 @@
     </table>
   </main>
 
+  <!-- BOŞ DURUM -->
   <div class="empty-state" *ngIf="!selectedDept">
     <div class="hero-content">
       <h1>ÜNİVERSİTE OTOMASYONU</h1>
@@ -100,4 +105,5 @@
       <div class="status-indicator">Sistem Durumu: Aktif</div>
     </div>
   </div>
+
 </div>
