@@ -19,6 +19,7 @@ namespace OgrenciBilgiSistemiProject.Controllers
             _mapper = mapper;
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -36,6 +37,8 @@ namespace OgrenciBilgiSistemiProject.Controllers
 
             return Ok(courses);
         }
+
+      
 
         [HttpPost]
         public async Task<IActionResult> Create(CourseCreateDto dto)

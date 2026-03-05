@@ -25,21 +25,18 @@ namespace OgrenciBilgiSistemiProject.Services
         public LoginResponse? Login(LoginRequest request)
         {
             var user = _context.Users
-                .Include(u => u.Role)
+                .Include(u => u.Role)   // 🔥 BURASI ÇOK ÖNEMLİ
                 .FirstOrDefault(u => u.Email == request.Email);
 
             if (user == null) return null;
 
-            bool isValid = false;
+            if (string.IsNullOrEmpty(user.PasswordHash)) return null;
 
-            try
-            {
-                isValid = _passwordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);
-            }
-            catch
-            {
-                isValid = (user.PasswordHash == request.Password);
-            }
+            bool isValid = _passwordHasher.VerifyPassword(
+                request.Password,
+                user.PasswordHash,
+                user.PasswordSalt
+            );
 
             if (!isValid) return null;
 
@@ -48,9 +45,8 @@ namespace OgrenciBilgiSistemiProject.Services
             return new LoginResponse
             {
                 Username = user.Email,
-                Role = user.Role?.Name ?? "User", 
+                Role = user.Role.Name,
                 Token = token
             };
         }
     }
-}
