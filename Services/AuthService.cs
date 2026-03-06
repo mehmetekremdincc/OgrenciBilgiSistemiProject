@@ -50,3 +50,4 @@ namespace OgrenciBilgiSistemiProject.Services
             };
         }
     }
+}
